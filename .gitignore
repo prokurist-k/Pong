@@ -1,0 +1,13 @@
+build/
+cmake-build-debug/
+
+Pong
+*.exe
+*.out
+
+.vscode/
+.idea/
+.DS_Store
+.zed/
+
+compile_commands.json
