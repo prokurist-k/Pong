@@ -9,5 +9,5 @@ Pong
 .idea/
 .DS_Store
 .zed/
-
+.cache/
 compile_commands.json
