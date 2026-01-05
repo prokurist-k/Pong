@@ -24,8 +24,12 @@ set(GAME_SOURCES
     Source/Math/Math.cpp
     Source/Math/Vector2.h
     Source/Math/Vector2.cpp
+    Source/Systems/InputSystem.h
+    Source/Systems/InputSystem.cpp
     Source/Systems/MovementSystem.h
     Source/Systems/MovementSystem.cpp
+    Source/Systems/RenderSystem.h
+    Source/Systems/RenderSystem.cpp
 )
 add_executable(Pong
     ${GAME_SOURCES}

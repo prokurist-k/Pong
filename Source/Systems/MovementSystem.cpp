@@ -17,9 +17,9 @@ void CMovementSystem::Update(CWorld& world, const float delta_seconds)
             continue;
         }
 
-        CTransformComponent transform_component = world.GetComponent<CTransformComponent>(id);
-        CVelocityComponent velocity_component = world.GetComponent<CVelocityComponent>(id);
+        CTransformComponent& transform_component = world.GetComponent<CTransformComponent>(id);
+        CVelocityComponent& velocity_component = world.GetComponent<CVelocityComponent>(id);
 
-        transform_component.location += velocity_component.direction * velocity_component.speed * delta_seconds;
+        transform_component.location += velocity_component.direction * (velocity_component.speed * delta_seconds);
     }
 }

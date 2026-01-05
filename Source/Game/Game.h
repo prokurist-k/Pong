@@ -3,6 +3,8 @@
 
 #include "ECS/Entity.h"
 #include "ECS/World.h"
+#include "Systems/InputSystem.h"
+#include "Systems/MovementSystem.h"
 #include "Systems/RenderSystem.h"
 #include <memory>
 class CGame
@@ -25,8 +27,13 @@ private:
 
     std::unique_ptr<CWorld> world;
     std::unique_ptr<CRenderSystem> render_system;
+    std::unique_ptr<CMovementSystem> movement_system;
+    std::unique_ptr<CInputSystem> input_system;
+
+    uint64 last_tick_time = 0;
 
     EntityId ball;
+    EntityId player_paddle;
 };
 
 #endif // GAME_H

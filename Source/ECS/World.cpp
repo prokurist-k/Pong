@@ -15,6 +15,7 @@ CWorld::CWorld()
     transform_component_pool.resize(MAX_ENTITES);
     velocity_component_pool.resize(MAX_ENTITES);
     sprite_component_pool.resize(MAX_ENTITES);
+    input_component_pool.resize(MAX_ENTITES);
 }
 
 EntityId CWorld::CreateEntity()

@@ -5,6 +5,7 @@
 #include "Math/Color.h"
 #include "Math/Vector2.h"
 
+#include <SDL_scancode.h>
 #include <bitset>
 
 const uint32 MAX_COMPONENTS = 32;
@@ -15,6 +16,7 @@ enum EComponentType
     Transform = 0,
     Velocity,
     Sprite,
+    Input,
     MaxComponents
 };
 
@@ -41,6 +43,12 @@ class CVelocityComponent
 {
 public:
     CVelocityComponent() = default;
+    CVelocityComponent(const CVector2& in_direction, float in_speed)
+        : direction(in_direction)
+        , speed(in_speed)
+    {
+
+    }
 
     CVector2 direction = CVector2::zero_vector;
     float speed = 0.0f;
@@ -50,11 +58,28 @@ class CSpriteComponent
 {
 public:
     CSpriteComponent() = default;
-    CSpriteComponent(const CLinearColor& in_color)
+    CSpriteComponent(const CColor& in_color)
         : color(in_color)
     {}
 
-    CLinearColor color;
+    CColor color;
+};
+
+class CInputComponent
+{
+public:
+    CInputComponent() = default;
+    CInputComponent(SDL_Scancode in_key_up, SDL_Scancode in_key_down, float in_paddle_speed)
+        : key_up(in_key_up)
+        , key_down(in_key_down)
+        , paddle_speed(in_paddle_speed)
+    {
+
+    }
+
+    SDL_Scancode key_up;
+    SDL_Scancode key_down;
+    float paddle_speed;
 };
 
 #endif // COMPONENTS_H

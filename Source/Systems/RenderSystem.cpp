@@ -27,7 +27,7 @@ void CRenderSystem::Update(CWorld& world)
         rect.x = static_cast<int>(transform_component.location.x);
         rect.y = static_cast<int>(transform_component.location.y);
         rect.w = static_cast<int>(transform_component.scale.x);
-        rect.y = static_cast<int>(transform_component.scale.y);
+        rect.h = static_cast<int>(transform_component.scale.y);
 
         SDL_SetRenderDrawColor(renderer, sprite_component.color.r, sprite_component.color.g, sprite_component.color.b, sprite_component.color.a);
         SDL_RenderFillRect(renderer, &rect);

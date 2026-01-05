@@ -1,0 +1,17 @@
+[
+  {
+    "label": "Debug Pong",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "./build/Pong",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "args": [],
+    "env": {
+      "DISPLAY": ":0"
+    },
+    "build": {
+      "command": "cmake",
+      "args": ["--build", "build"]
+    }
+  }
+]

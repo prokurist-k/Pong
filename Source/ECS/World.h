@@ -25,15 +25,20 @@ class CWorld
                 transform_component_pool[id] = component;
                 signatures[id].set(EComponentType::Transform, true);
             }
-            else if(std::is_same_v<T, CVelocityComponent>)
+            else if constexpr(std::is_same_v<T, CVelocityComponent>)
             {
                 velocity_component_pool[id] = component;
                 signatures[id].set(EComponentType::Velocity, true);
             }
-            else if(std::is_same_v<T, CSpriteComponent>)
+            else if constexpr(std::is_same_v<T, CSpriteComponent>)
             {
                 sprite_component_pool[id] = component;
                 signatures[id].set(EComponentType::Sprite, true);
+            }
+            else if constexpr(std::is_same_v<T, CInputComponent>)
+            {
+                input_component_pool[id] = component;
+                signatures[id].set(EComponentType::Input, true);
             }
         }
 
@@ -45,15 +50,20 @@ class CWorld
                 transform_component_pool[id] = component;
                 signatures[id].set(EComponentType::Transform, true);
             }
-            else if(std::is_same_v<T, CVelocityComponent>)
+            else if constexpr(std::is_same_v<T, CVelocityComponent>)
             {
                 velocity_component_pool[id] = component;
                 signatures[id].set(EComponentType::Velocity, true);
             }
-            else if(std::is_same_v<T, CSpriteComponent>)
+            else if constexpr(std::is_same_v<T, CSpriteComponent>)
             {
                 sprite_component_pool[id] = component;
                 signatures[id].set(EComponentType::Sprite, true);
+            }
+            else if constexpr(std::is_same_v<T, CInputComponent>)
+            {
+                input_component_pool[id] = component;
+                signatures[id].set(EComponentType::Input, true);
             }
         }
 
@@ -72,6 +82,10 @@ class CWorld
             {
                 return sprite_component_pool[id];
             }
+            else if constexpr (std::is_same_v<T, CInputComponent>)
+            {
+                return input_component_pool[id];
+            }
         }
 
     private:
@@ -82,6 +96,7 @@ class CWorld
         std::vector<CTransformComponent> transform_component_pool;
         std::vector<CVelocityComponent> velocity_component_pool;
         std::vector<CSpriteComponent> sprite_component_pool;
+        std::vector<CInputComponent> input_component_pool;
 };
 
 #endif // WORLD_H
