@@ -77,7 +77,11 @@ void CCollisionSystem::Update(CWorld &world)
         }
         else if(other_tag_component.tag == ETag::Enemy)
         {
-
+            ball_transform_component.location.x = other_transform_component.location.x - ball_box_collider_component.size.x - 0.1f;
+            ball_velocity_component.direction.x *= -1.0f;
+            CVector2 result = other_velocity_component.direction + ball_velocity_component.direction;
+            result.Normalize();
+            ball_velocity_component.direction = result;
         }
       }
     }

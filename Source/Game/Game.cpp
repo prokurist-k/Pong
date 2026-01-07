@@ -11,7 +11,7 @@
 #include <SDL_events.h>
 #include <SDL_render.h>
 
-bool CGame::Initialize(uint32 window_width, uint32 window_height)
+bool CGame::Initialize()
 {
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -24,7 +24,7 @@ bool CGame::Initialize(uint32 window_width, uint32 window_height)
             "Pong",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
-            window_width, window_height,
+            game_config.window_width, game_config.window_height,
             SDL_WINDOW_SHOWN
         );
 
@@ -44,30 +44,48 @@ bool CGame::Initialize(uint32 window_width, uint32 window_height)
     }
 
     world = std::make_unique<CWorld>();
-    world->SetWindowSize(window_width, window_height);
+    world->SetWindowSize(game_config.window_width, game_config.window_height);
     render_system = std::make_unique<CRenderSystem>(renderer);
     movement_system = std::make_unique<CMovementSystem>();
     input_system = std::make_unique<CInputSystem>();
     collision_system = std::make_unique<CCollisionSystem>();
 
     ball = world->CreateEntity();
-    world->AddComponent<CTransformComponent>(ball, CTransformComponent(CVector2(750.0f, 300.0f), 0.0f, CVector2(20.0f, 20.0f)));
+    world->AddComponent<CBoxColliderComponent>(ball, CBoxColliderComponent(CVector2(game_config.ball_size)));
+
+    CVector2 window_size(game_config.window_width, game_config.window_height);
+
+    CVector2 ball_size(game_config.ball_size, game_config.ball_size);
+    CVector2 ball_start_position = (window_size / 2.0f) - (ball_size / 2.0f);
+
+    world->AddComponent<CTransformComponent>(ball, CTransformComponent(CVector2(ball_start_position.x, ball_start_position.y), 0.0f, CVector2(game_config.ball_size)));
     world->AddComponent<CSpriteComponent>(ball, CSpriteComponent(CColor::white));
 
     CVector2 ball_direction(-1.0f, 0.0f);
     ball_direction.Normalize();
-    const float ball_speed = 300;
+    const float ball_speed = game_config.ball_start_speed;
     world->AddComponent<CVelocityComponent>(ball, CVelocityComponent(ball_direction, ball_speed));
     world->AddComponent<CTagComponent>(ball, CTagComponent(ETag::Ball));
-    world->AddComponent<CBoxColliderComponent>(ball, CBoxColliderComponent(CVector2(20.0f, 20.0f)));
+
+    CVector2 player_paddle_start_position = CVector2(game_config.paddle_offset_x, (game_config.window_height / 2.0f) - (game_config.paddle_height / 2.0f));
 
     player_paddle = world->CreateEntity();
-    world->AddComponent<CTransformComponent>(player_paddle, CTransformComponent(CVector2(10.0f, 10.0f), 0.0f, CVector2(20.0f, 80.0f)));
+    world->AddComponent<CTransformComponent>(player_paddle, CTransformComponent(player_paddle_start_position, 0.0f, CVector2(game_config.paddle_width, game_config.paddle_height)));
     world->AddComponent<CSpriteComponent>(player_paddle, CSpriteComponent(CColor::white));
-    world->AddComponent<CInputComponent>(player_paddle, CInputComponent(SDL_SCANCODE_W, SDL_SCANCODE_S, 400.0f));
+    world->AddComponent<CInputComponent>(player_paddle, CInputComponent(SDL_SCANCODE_W, SDL_SCANCODE_S, game_config.paddle_speed));
     world->AddComponent<CVelocityComponent>(player_paddle, CVelocityComponent());
     world->AddComponent<CTagComponent>(player_paddle, CTagComponent(ETag::Player));
-    world->AddComponent<CBoxColliderComponent>(player_paddle, CBoxColliderComponent(CVector2(20.f, 80.f)));
+    world->AddComponent<CBoxColliderComponent>(player_paddle, CBoxColliderComponent(CVector2(game_config.paddle_width, game_config.paddle_height)));
+
+    CVector2 enemy_paddle_start_position = CVector2(game_config.window_width - game_config.paddle_offset_x - game_config.paddle_width, (game_config.window_height / 2.0f) - (game_config.paddle_height / 2.0f));
+
+    enemy_paddle = world->CreateEntity();
+    world->AddComponent<CTransformComponent>(enemy_paddle, CTransformComponent(enemy_paddle_start_position, 0.0f, CVector2(game_config.paddle_width, game_config.paddle_height)));
+    world->AddComponent<CSpriteComponent>(enemy_paddle, CSpriteComponent(CColor::white));
+    world->AddComponent<CInputComponent>(enemy_paddle, CInputComponent(SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, game_config.paddle_speed));
+    world->AddComponent<CVelocityComponent>(enemy_paddle, CVelocityComponent());
+    world->AddComponent<CTagComponent>(enemy_paddle, CTagComponent(ETag::Enemy));
+    world->AddComponent<CBoxColliderComponent>(enemy_paddle, CBoxColliderComponent(CVector2(game_config.paddle_width, game_config.paddle_height)));
 
     return is_running = true;
 }
