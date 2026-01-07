@@ -12,6 +12,10 @@ class CWorld
     public:
         CWorld();
 
+        void SetWindowSize(const uint32 in_width, const uint32 in_height);
+        uint32 GetWindowWidth() const;
+        uint32 GetWindowHeight() const;
+
         EntityId CreateEntity();
         void DestroyEntity(const EntityId id);
 
@@ -40,6 +44,16 @@ class CWorld
                 input_component_pool[id] = component;
                 signatures[id].set(EComponentType::Input, true);
             }
+            else if constexpr(std::is_same_v<T, CTagComponent>)
+            {
+                tag_component_pool[id] = component;
+                signatures[id].set(EComponentType::Tag, true);
+            }
+            else if constexpr(std::is_same_v<T, CBoxColliderComponent>)
+            {
+                box_collider_component_pool[id] = component;
+                signatures[id].set(EComponentType::BoxCollider, true);
+            }
         }
 
         template<typename T>
@@ -65,6 +79,16 @@ class CWorld
                 input_component_pool[id] = component;
                 signatures[id].set(EComponentType::Input, true);
             }
+            else if constexpr(std::is_same_v<T, CTagComponent>)
+            {
+                tag_component_pool[id] = component;
+                signatures[id].set(EComponentType::Tag, true);
+            }
+            else if constexpr(std::is_same_v<T, CBoxColliderComponent>)
+            {
+                box_collider_component_pool[id] = component;
+                signatures[id].set(EComponentType::BoxCollider, true);
+            }
         }
 
         template<typename T>
@@ -86,9 +110,20 @@ class CWorld
             {
                 return input_component_pool[id];
             }
+            else if constexpr (std::is_same_v<T, CTagComponent>)
+            {
+                return tag_component_pool[id];
+            }
+            else if constexpr (std::is_same_v<T, CBoxColliderComponent>)
+            {
+                return box_collider_component_pool[id];
+            }
         }
 
     private:
+        uint32 window_width;
+        uint32 window_height;
+
         uint32 currently_active_entites;
         std::queue<EntityId> available_entity_ids;
         std::vector<Signature> signatures;
@@ -97,6 +132,8 @@ class CWorld
         std::vector<CVelocityComponent> velocity_component_pool;
         std::vector<CSpriteComponent> sprite_component_pool;
         std::vector<CInputComponent> input_component_pool;
+        std::vector<CTagComponent> tag_component_pool;
+        std::vector<CBoxColliderComponent> box_collider_component_pool;
 };
 
 #endif // WORLD_H

@@ -18,12 +18,15 @@ set(GAME_SOURCES
     Source/ECS/World.cpp
     Source/Game/Game.h
     Source/Game/Game.cpp
+    Source/Math/AABB.h
     Source/Math/Color.h
     Source/Math/Color.cpp
     Source/Math/Math.h
     Source/Math/Math.cpp
     Source/Math/Vector2.h
     Source/Math/Vector2.cpp
+    Source/Systems/CollisionSystem.h
+    Source/Systems/CollisionSystem.cpp
     Source/Systems/InputSystem.h
     Source/Systems/InputSystem.cpp
     Source/Systems/MovementSystem.h

@@ -17,9 +17,10 @@ enum EComponentType
     Velocity,
     Sprite,
     Input,
+    BoxCollider,
+    Tag,
     MaxComponents
 };
-
 
 class CTransformComponent
 {
@@ -80,6 +81,44 @@ public:
     SDL_Scancode key_up;
     SDL_Scancode key_down;
     float paddle_speed;
+};
+
+class CBoxColliderComponent
+{
+public:
+    CBoxColliderComponent() = default;
+    CBoxColliderComponent(const CVector2& in_size, const CVector2& in_offset = CVector2::zero_vector)
+        : size(in_size)
+        , offset(in_offset)
+    {
+
+    }
+
+    CVector2 size;
+    CVector2 offset;
+};
+
+enum class ETag
+{
+    None,
+    Player,
+    Enemy,
+    Ball,
+    Wall,
+    Goal
+};
+
+class CTagComponent
+{
+public:
+    CTagComponent() = default;
+    CTagComponent(ETag in_tag)
+        : tag(in_tag)
+    {
+
+    }
+
+    ETag tag;
 };
 
 #endif // COMPONENTS_H

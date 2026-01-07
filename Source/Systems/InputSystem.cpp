@@ -11,7 +11,7 @@ CInputSystem::CInputSystem()
 
 void CInputSystem::Update(CWorld& world)
 {
-     const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
+    const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
 
     for(EntityId id = 0; id != MAX_ENTITES; ++id)
     {

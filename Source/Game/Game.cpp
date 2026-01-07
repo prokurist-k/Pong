@@ -2,8 +2,6 @@
 #include "Components/Components.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
-#include "Systems/InputSystem.h"
-#include "Systems/MovementSystem.h"
 
 #include <SDL_scancode.h>
 #include <SDL_timer.h>
@@ -13,7 +11,7 @@
 #include <SDL_events.h>
 #include <SDL_render.h>
 
-bool CGame::Initialize()
+bool CGame::Initialize(uint32 window_width, uint32 window_height)
 {
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -26,7 +24,7 @@ bool CGame::Initialize()
             "Pong",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
-            800, 600,
+            window_width, window_height,
             SDL_WINDOW_SHOWN
         );
 
@@ -46,24 +44,30 @@ bool CGame::Initialize()
     }
 
     world = std::make_unique<CWorld>();
+    world->SetWindowSize(window_width, window_height);
     render_system = std::make_unique<CRenderSystem>(renderer);
     movement_system = std::make_unique<CMovementSystem>();
     input_system = std::make_unique<CInputSystem>();
+    collision_system = std::make_unique<CCollisionSystem>();
 
     ball = world->CreateEntity();
-    world->AddComponent<CTransformComponent>(ball, CTransformComponent(CVector2(10.0f, 10.0f), 0.0f, CVector2(10.0f, 10.0f)));
+    world->AddComponent<CTransformComponent>(ball, CTransformComponent(CVector2(750.0f, 300.0f), 0.0f, CVector2(20.0f, 20.0f)));
     world->AddComponent<CSpriteComponent>(ball, CSpriteComponent(CColor::white));
 
-    CVector2 ball_direction(1.0f, 0.5f);
+    CVector2 ball_direction(-1.0f, 0.0f);
     ball_direction.Normalize();
     const float ball_speed = 300;
     world->AddComponent<CVelocityComponent>(ball, CVelocityComponent(ball_direction, ball_speed));
+    world->AddComponent<CTagComponent>(ball, CTagComponent(ETag::Ball));
+    world->AddComponent<CBoxColliderComponent>(ball, CBoxColliderComponent(CVector2(20.0f, 20.0f)));
 
     player_paddle = world->CreateEntity();
-    world->AddComponent<CTransformComponent>(player_paddle, CTransformComponent(CVector2(10.0f, 10.0f), 0.0f, CVector2(10.0f, 60.0f)));
+    world->AddComponent<CTransformComponent>(player_paddle, CTransformComponent(CVector2(10.0f, 10.0f), 0.0f, CVector2(20.0f, 80.0f)));
     world->AddComponent<CSpriteComponent>(player_paddle, CSpriteComponent(CColor::white));
     world->AddComponent<CInputComponent>(player_paddle, CInputComponent(SDL_SCANCODE_W, SDL_SCANCODE_S, 400.0f));
     world->AddComponent<CVelocityComponent>(player_paddle, CVelocityComponent());
+    world->AddComponent<CTagComponent>(player_paddle, CTagComponent(ETag::Player));
+    world->AddComponent<CBoxColliderComponent>(player_paddle, CBoxColliderComponent(CVector2(20.f, 80.f)));
 
     return is_running = true;
 }
@@ -84,7 +88,9 @@ void CGame::Run()
         last_tick_time = current_tick_time;
 
         if (delta_seconds > 0.05f)
+        {
             delta_seconds = 0.05f;
+        }
 
         Update(delta_seconds);
         Render();
@@ -107,6 +113,7 @@ void CGame::Update(float delta_seconds)
 {
     input_system->Update(*world);
     movement_system->Update(*world, delta_seconds);
+    collision_system->Update(*world);
 }
 
 void CGame::Render()

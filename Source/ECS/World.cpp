@@ -16,6 +16,24 @@ CWorld::CWorld()
     velocity_component_pool.resize(MAX_ENTITES);
     sprite_component_pool.resize(MAX_ENTITES);
     input_component_pool.resize(MAX_ENTITES);
+    tag_component_pool.resize(MAX_ENTITES);
+    box_collider_component_pool.resize(MAX_ENTITES);
+}
+
+void CWorld::SetWindowSize(const uint32 in_width, const uint32 in_height)
+{
+    window_width = in_width;
+    window_height = in_height;
+}
+
+uint32 CWorld::GetWindowWidth() const
+{
+    return window_width;
+}
+
+uint32 CWorld::GetWindowHeight() const
+{
+    return window_height;
 }
 
 EntityId CWorld::CreateEntity()

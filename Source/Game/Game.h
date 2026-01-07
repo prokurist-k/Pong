@@ -3,6 +3,7 @@
 
 #include "ECS/Entity.h"
 #include "ECS/World.h"
+#include "Systems/CollisionSystem.h"
 #include "Systems/InputSystem.h"
 #include "Systems/MovementSystem.h"
 #include "Systems/RenderSystem.h"
@@ -10,7 +11,7 @@
 class CGame
 {
 public:
-    bool Initialize();
+    bool Initialize(uint32 window_width, uint32 window_height);
     void Shutdown();
 
     void Run();
@@ -29,6 +30,7 @@ private:
     std::unique_ptr<CRenderSystem> render_system;
     std::unique_ptr<CMovementSystem> movement_system;
     std::unique_ptr<CInputSystem> input_system;
+    std::unique_ptr<CCollisionSystem> collision_system;
 
     uint64 last_tick_time = 0;
 
