@@ -13,7 +13,7 @@ void CInputSystem::Update(CWorld& world)
 {
     const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
 
-    for(EntityId id = 0; id != MAX_ENTITES; ++id)
+    for(EntityId id = 0; id != MAX_ENTITIES; ++id)
     {
         if(!world.HasComponent(id, EComponentType::Input) ||
             !world.HasComponent(id, EComponentType::Velocity))

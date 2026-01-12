@@ -1,5 +1,5 @@
-#ifndef RENDERSYSTEM_J
-#define RENDERSYSTEM_J
+#ifndef RENDERSYSTEM_H
+#define RENDERSYSTEM_H
 
 #include "ECS/World.h"
 class CRenderSystem
@@ -13,4 +13,4 @@ private:
     class SDL_Renderer* renderer = nullptr;
 };
 
-#endif // RENDERSYSTEM_J
+#endif // RENDERSYSTEM_H

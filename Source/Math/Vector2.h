@@ -1,6 +1,8 @@
 #ifndef VECTOR2_H
 #define VECTOR2_H
 
+#include <string>
+
 class CVector2
 {
 public:
@@ -25,7 +27,7 @@ public:
 	CVector2(float in_value);
 	CVector2(const CVector2& in_vec);
 
-	//const String ToString() const;
+	const std::string ToString() const;
 
 	CVector2 operator+(const CVector2& vec) const;
 	CVector2 operator-(const CVector2& vec) const;

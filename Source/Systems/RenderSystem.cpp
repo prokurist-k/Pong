@@ -12,7 +12,7 @@ CRenderSystem::CRenderSystem(SDL_Renderer* in_renderer)
 
 void CRenderSystem::Update(CWorld& world)
 {
-    for(EntityId id = 0; id != MAX_ENTITES; ++id)
+    for(EntityId id = 0; id != MAX_ENTITIES; ++id)
     {
         if(!world.HasComponent(id, EComponentType::Transform) ||
             !world.HasComponent(id, EComponentType::Sprite))

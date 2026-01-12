@@ -1,6 +1,8 @@
 #include "Vector2.h"
 #include "Math.h"
 
+#include <format>
+
 /*static*/ const CVector2 CVector2::zero_vector = CVector2(0.0f, 0.0f);
 
 	/*static*/ float CVector2::DistanceSquared(const CVector2& vec1, const CVector2& vec2)
@@ -160,7 +162,7 @@
 		return CMath::IsNearlyZero(scalar_product);
 	}
 
-	/*const String CVector2::ToString() const
+	const std::string CVector2::ToString() const
 	{
 		return std::format("({}, {})", x, y);
-		}*/
+	}

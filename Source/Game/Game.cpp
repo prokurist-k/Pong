@@ -1,8 +1,10 @@
 #include "Game.h"
 #include "Components/Components.h"
+#include "ECS/Entity.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
 
+#include <SDL_log.h>
 #include <SDL_scancode.h>
 #include <SDL_timer.h>
 #include <memory>
@@ -12,6 +14,50 @@
 #include <SDL_render.h>
 
 bool CGame::Initialize()
+{
+    if(!InitializeSDL())
+    {
+        SDL_Log("Failed to initialize SDL");
+        return false;
+    }
+
+    if(!InitializeECS())
+    {
+        SDL_Log("Failed to initialize ESC");
+        return false;
+    }
+
+    CreateEntities();
+
+    return is_running = true;
+}
+
+void CGame::Shutdown()
+{
+    SDL_Quit();
+}
+
+void CGame::Run()
+{
+    while(is_running)
+    {
+        ProcessInput();
+
+        uint64 current_tick_time = SDL_GetTicks64();
+        float delta_seconds = (current_tick_time - last_tick_time) / 1000.0f;
+        last_tick_time = current_tick_time;
+
+        if (delta_seconds > 0.05f)
+        {
+            delta_seconds = 0.05f;
+        }
+
+        Update(delta_seconds);
+        Render();
+    }
+}
+
+bool CGame::InitializeSDL()
 {
     if(SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -42,14 +88,48 @@ bool CGame::Initialize()
         SDL_Quit();
         return false;
     }
+    return true;
+}
 
+bool CGame::InitializeECS()
+{
     world = std::make_unique<CWorld>();
+    if(!world)
+    {
+        SDL_Log("Failed to create world");
+        return false;
+    }
     world->SetWindowSize(game_config.window_width, game_config.window_height);
-    render_system = std::make_unique<CRenderSystem>(renderer);
-    movement_system = std::make_unique<CMovementSystem>();
-    input_system = std::make_unique<CInputSystem>();
-    collision_system = std::make_unique<CCollisionSystem>();
 
+    render_system = std::make_unique<CRenderSystem>(renderer);
+    if(!render_system)
+    {
+        SDL_Log("Failed to create render system");
+        return false;
+    }
+    movement_system = std::make_unique<CMovementSystem>();
+    if(!movement_system)
+    {
+        SDL_Log("Failed to create movement system");
+        return false;
+    }
+    input_system = std::make_unique<CInputSystem>();
+    if(!input_system)
+    {
+        SDL_Log("Failed to create input system");
+        return false;
+    }
+    collision_system = std::make_unique<CCollisionSystem>();
+    if(!collision_system)
+    {
+        SDL_Log("Failed to create collision system");
+        return false;
+    }
+    return true;
+}
+
+void CGame::CreateEntities()
+{
     ball = world->CreateEntity();
     world->AddComponent<CBoxColliderComponent>(ball, CBoxColliderComponent(CVector2(game_config.ball_size)));
 
@@ -67,52 +147,29 @@ bool CGame::Initialize()
     world->AddComponent<CVelocityComponent>(ball, CVelocityComponent(ball_direction, ball_speed));
     world->AddComponent<CTagComponent>(ball, CTagComponent(ETag::Ball));
 
-    CVector2 player_paddle_start_position = CVector2(game_config.paddle_offset_x, (game_config.window_height / 2.0f) - (game_config.paddle_height / 2.0f));
+    float player_location_x = game_config.paddle_offset_x;
+    float player_location_y = (game_config.window_height / 2.0f) - (game_config.paddle_height / 2.0f);
+    player_paddle = CreatePaddle(CVector2(player_location_x, player_location_y), SDL_SCANCODE_W, SDL_SCANCODE_S, ETag::Player);
 
-    player_paddle = world->CreateEntity();
-    world->AddComponent<CTransformComponent>(player_paddle, CTransformComponent(player_paddle_start_position, 0.0f, CVector2(game_config.paddle_width, game_config.paddle_height)));
-    world->AddComponent<CSpriteComponent>(player_paddle, CSpriteComponent(CColor::white));
-    world->AddComponent<CInputComponent>(player_paddle, CInputComponent(SDL_SCANCODE_W, SDL_SCANCODE_S, game_config.paddle_speed));
-    world->AddComponent<CVelocityComponent>(player_paddle, CVelocityComponent());
-    world->AddComponent<CTagComponent>(player_paddle, CTagComponent(ETag::Player));
-    world->AddComponent<CBoxColliderComponent>(player_paddle, CBoxColliderComponent(CVector2(game_config.paddle_width, game_config.paddle_height)));
-
-    CVector2 enemy_paddle_start_position = CVector2(game_config.window_width - game_config.paddle_offset_x - game_config.paddle_width, (game_config.window_height / 2.0f) - (game_config.paddle_height / 2.0f));
-
-    enemy_paddle = world->CreateEntity();
-    world->AddComponent<CTransformComponent>(enemy_paddle, CTransformComponent(enemy_paddle_start_position, 0.0f, CVector2(game_config.paddle_width, game_config.paddle_height)));
-    world->AddComponent<CSpriteComponent>(enemy_paddle, CSpriteComponent(CColor::white));
-    world->AddComponent<CInputComponent>(enemy_paddle, CInputComponent(SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, game_config.paddle_speed));
-    world->AddComponent<CVelocityComponent>(enemy_paddle, CVelocityComponent());
-    world->AddComponent<CTagComponent>(enemy_paddle, CTagComponent(ETag::Enemy));
-    world->AddComponent<CBoxColliderComponent>(enemy_paddle, CBoxColliderComponent(CVector2(game_config.paddle_width, game_config.paddle_height)));
-
-    return is_running = true;
+    float enemy_location_x = game_config.window_width - game_config.paddle_offset_x - game_config.paddle_width;
+    float enemy_location_y = (game_config.window_height / 2.0f) - (game_config.paddle_height / 2.0f);
+    enemy_paddle = CreatePaddle(CVector2(enemy_location_x, enemy_location_y), SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, ETag::Enemy);
 }
 
-void CGame::Shutdown()
+EntityId CGame::CreatePaddle(const CVector2& position, SDL_Scancode up, SDL_Scancode down, ETag tag)
 {
+    EntityId paddle = world->CreateEntity();
 
-}
+    world->AddComponent<CTransformComponent>(paddle, CTransformComponent(position, 0.0f, CVector2(game_config.paddle_width, game_config.paddle_height)));
+    world->AddComponent<CSpriteComponent>(paddle, CSpriteComponent(CColor::white));
 
-void CGame::Run()
-{
-    while(is_running)
-    {
-        ProcessInput();
+    world->AddComponent<CInputComponent>(paddle, CInputComponent(up, down, game_config.paddle_speed));
+    world->AddComponent<CVelocityComponent>(paddle, CVelocityComponent());
 
-        uint64 current_tick_time = SDL_GetTicks64();
-        float delta_seconds = (current_tick_time - last_tick_time) / 1000.0f;
-        last_tick_time = current_tick_time;
+    world->AddComponent<CBoxColliderComponent>(paddle, CBoxColliderComponent(CVector2(game_config.paddle_width, game_config.paddle_height)));
+    world->AddComponent<CTagComponent>(paddle, CTagComponent(tag));
 
-        if (delta_seconds > 0.05f)
-        {
-            delta_seconds = 0.05f;
-        }
-
-        Update(delta_seconds);
-        Render();
-    }
+    return paddle;
 }
 
 void CGame::ProcessInput()

@@ -36,6 +36,12 @@ public:
     void Run();
 
 private:
+    bool InitializeSDL();
+    bool InitializeECS();
+
+    void CreateEntities();
+    EntityId CreatePaddle(const CVector2& position, SDL_Scancode up, SDL_Scancode down, ETag tag);
+
     void ProcessInput();
 
     void Update(float delta_seconds);

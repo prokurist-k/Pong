@@ -6,6 +6,8 @@
 
 #include <vector>
 #include <queue>
+#include <type_traits>
+#include <utility>
 
 class CWorld
 {
@@ -22,71 +24,38 @@ class CWorld
         bool HasComponent(EntityId id, EComponentType component_type);
 
         template<typename T>
-        void AddComponent(EntityId id, T& component)
-        {
-            if constexpr(std::is_same_v<T, CTransformComponent>)
-            {
-                transform_component_pool[id] = component;
-                signatures[id].set(EComponentType::Transform, true);
-            }
-            else if constexpr(std::is_same_v<T, CVelocityComponent>)
-            {
-                velocity_component_pool[id] = component;
-                signatures[id].set(EComponentType::Velocity, true);
-            }
-            else if constexpr(std::is_same_v<T, CSpriteComponent>)
-            {
-                sprite_component_pool[id] = component;
-                signatures[id].set(EComponentType::Sprite, true);
-            }
-            else if constexpr(std::is_same_v<T, CInputComponent>)
-            {
-                input_component_pool[id] = component;
-                signatures[id].set(EComponentType::Input, true);
-            }
-            else if constexpr(std::is_same_v<T, CTagComponent>)
-            {
-                tag_component_pool[id] = component;
-                signatures[id].set(EComponentType::Tag, true);
-            }
-            else if constexpr(std::is_same_v<T, CBoxColliderComponent>)
-            {
-                box_collider_component_pool[id] = component;
-                signatures[id].set(EComponentType::BoxCollider, true);
-            }
-        }
-
-        template<typename T>
         void AddComponent(EntityId id, T&& component)
         {
-            if constexpr(std::is_same_v<T, CTransformComponent>)
+            using ComponentType = std::decay_t<T>;
+
+            if constexpr(std::is_same_v<ComponentType, CTransformComponent>)
             {
-                transform_component_pool[id] = component;
+                transform_component_pool[id] = std::forward<T>(component);
                 signatures[id].set(EComponentType::Transform, true);
             }
-            else if constexpr(std::is_same_v<T, CVelocityComponent>)
+            else if constexpr(std::is_same_v<ComponentType, CVelocityComponent>)
             {
-                velocity_component_pool[id] = component;
+                velocity_component_pool[id] = std::forward<T>(component);
                 signatures[id].set(EComponentType::Velocity, true);
             }
-            else if constexpr(std::is_same_v<T, CSpriteComponent>)
+            else if constexpr(std::is_same_v<ComponentType, CSpriteComponent>)
             {
-                sprite_component_pool[id] = component;
+                sprite_component_pool[id] = std::forward<T>(component);
                 signatures[id].set(EComponentType::Sprite, true);
             }
-            else if constexpr(std::is_same_v<T, CInputComponent>)
+            else if constexpr(std::is_same_v<ComponentType, CInputComponent>)
             {
-                input_component_pool[id] = component;
+                input_component_pool[id] = std::forward<T>(component);
                 signatures[id].set(EComponentType::Input, true);
             }
-            else if constexpr(std::is_same_v<T, CTagComponent>)
+            else if constexpr(std::is_same_v<ComponentType, CTagComponent>)
             {
-                tag_component_pool[id] = component;
+                tag_component_pool[id] = std::forward<T>(component);
                 signatures[id].set(EComponentType::Tag, true);
             }
-            else if constexpr(std::is_same_v<T, CBoxColliderComponent>)
+            else if constexpr(std::is_same_v<ComponentType, CBoxColliderComponent>)
             {
-                box_collider_component_pool[id] = component;
+                box_collider_component_pool[id] = std::forward<T>(component);
                 signatures[id].set(EComponentType::BoxCollider, true);
             }
         }

@@ -4,20 +4,22 @@
 
 CWorld::CWorld()
     : currently_active_entites(0)
+    , window_width(0)
+    , window_height(0)
 {
-    for(EntityId i = 0; i != MAX_ENTITES; ++i)
+    for(EntityId i = 0; i != MAX_ENTITIES; ++i)
     {
         available_entity_ids.push(i);
     }
 
-    signatures.resize(MAX_ENTITES);
+    signatures.resize(MAX_ENTITIES);
 
-    transform_component_pool.resize(MAX_ENTITES);
-    velocity_component_pool.resize(MAX_ENTITES);
-    sprite_component_pool.resize(MAX_ENTITES);
-    input_component_pool.resize(MAX_ENTITES);
-    tag_component_pool.resize(MAX_ENTITES);
-    box_collider_component_pool.resize(MAX_ENTITES);
+    transform_component_pool.resize(MAX_ENTITIES);
+    velocity_component_pool.resize(MAX_ENTITIES);
+    sprite_component_pool.resize(MAX_ENTITIES);
+    input_component_pool.resize(MAX_ENTITIES);
+    tag_component_pool.resize(MAX_ENTITIES);
+    box_collider_component_pool.resize(MAX_ENTITIES);
 }
 
 void CWorld::SetWindowSize(const uint32 in_width, const uint32 in_height)
@@ -38,7 +40,7 @@ uint32 CWorld::GetWindowHeight() const
 
 EntityId CWorld::CreateEntity()
 {
-    if(currently_active_entites >= MAX_ENTITES)
+    if(currently_active_entites >= MAX_ENTITIES)
     {
         return INVALID_ENTITY_ID;
     }

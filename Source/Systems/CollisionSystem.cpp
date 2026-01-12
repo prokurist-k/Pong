@@ -6,7 +6,7 @@
 
 void CCollisionSystem::Update(CWorld &world)
 {
-  for (EntityId id = 0; id != MAX_ENTITES; ++id)
+  for (EntityId id = 0; id != MAX_ENTITIES; ++id)
   {
     if (!world.HasComponent(id, EComponentType::Tag) ||
         !world.HasComponent(id, EComponentType::Transform) ||
@@ -36,13 +36,13 @@ void CCollisionSystem::Update(CWorld &world)
       ball_transform_component.location.y = world.GetWindowHeight() - ball_box_collider_component.size.y;
       ball_velocity_component.direction.y *= -1.0f;
     }
-    else if(ball_transform_component.location.x + ball_box_collider_component.size.x > world.GetWindowWidth())
-    {
-        ball_transform_component.location.x = world.GetWindowWidth() - ball_box_collider_component.size.x;
-        ball_velocity_component.direction.x *= -1.0f;
-    }
+    //else if(ball_transform_component.location.x + ball_box_collider_component.size.x > world.GetWindowWidth())
+    //{
+    //    ball_transform_component.location.x = world.GetWindowWidth() - ball_box_collider_component.size.x;
+    //    ball_velocity_component.direction.x *= -1.0f;
+    //}
 
-    for (EntityId other_id = 0; other_id != MAX_ENTITES; other_id++)
+    for (EntityId other_id = 0; other_id != MAX_ENTITIES; other_id++)
     {
       if (id == other_id)
       {
@@ -62,27 +62,27 @@ void CCollisionSystem::Update(CWorld &world)
 
       if (CheckAABB(ball_transform_component.location, ball_box_collider_component.size, other_transform_component.location,other_box_collider_component.size))
       {
-        CTagComponent other_tag_component = world.GetComponent<CTagComponent>(other_id).tag;
-        if (other_tag_component.tag == ETag::Wall)
-        {
-            ball_velocity_component.direction.y *= -1.0f;
-        }
-        else if (other_tag_component.tag == ETag::Player)
-        {
-          ball_transform_component.location.x = other_transform_component.location.x + other_box_collider_component.size.x + 0.1f;
-          ball_velocity_component.direction.x *= -1.0f;
-          CVector2 result = other_velocity_component.direction + ball_velocity_component.direction;
-          result.Normalize();
-          ball_velocity_component.direction = result;
-        }
-        else if(other_tag_component.tag == ETag::Enemy)
-        {
-            ball_transform_component.location.x = other_transform_component.location.x - ball_box_collider_component.size.x - 0.1f;
-            ball_velocity_component.direction.x *= -1.0f;
-            CVector2 result = other_velocity_component.direction + ball_velocity_component.direction;
-            result.Normalize();
-            ball_velocity_component.direction = result;
-        }
+          CTagComponent other_tag_component = world.GetComponent<CTagComponent>(other_id).tag;
+          if (other_tag_component.tag == ETag::Wall)
+          {
+              ball_velocity_component.direction.y *= -1.0f;
+          }
+          else if (other_tag_component.tag == ETag::Player)
+          {
+              ball_transform_component.location.x = other_transform_component.location.x + other_box_collider_component.size.x + 0.1f;
+              ball_velocity_component.direction.x *= -1.0f;
+              CVector2 result = other_velocity_component.direction + ball_velocity_component.direction;
+              result.Normalize();
+              ball_velocity_component.direction = result;
+          }
+          else if(other_tag_component.tag == ETag::Enemy)
+          {
+              ball_transform_component.location.x = other_transform_component.location.x - ball_box_collider_component.size.x - 0.1f;
+              ball_velocity_component.direction.x *= -1.0f;
+              CVector2 result = other_velocity_component.direction + ball_velocity_component.direction;
+              result.Normalize();
+              ball_velocity_component.direction = result;
+          }
       }
     }
   }
