@@ -6,17 +6,15 @@
 
 CInputSystem::CInputSystem()
 {
-
 }
 
 void CInputSystem::Update(CWorld& world)
 {
     const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
 
-    for(EntityId id = 0; id != MAX_ENTITIES; ++id)
+    for (EntityId id = 0; id != MAX_ENTITIES; ++id)
     {
-        if(!world.HasComponent(id, EComponentType::Input) ||
-            !world.HasComponent(id, EComponentType::Velocity))
+        if (!world.HasComponent(id, EComponentType::Input) || !world.HasComponent(id, EComponentType::Velocity))
         {
             continue;
         }
@@ -27,12 +25,12 @@ void CInputSystem::Update(CWorld& world)
         velocity_component.direction = CVector2::zero_vector;
         velocity_component.speed = 0.0f;
 
-        if(keyboard_state[input_component.key_up])
+        if (keyboard_state[input_component.key_up])
         {
             velocity_component.direction = CVector2(0.0f, -1.0f);
             velocity_component.speed = input_component.paddle_speed;
         }
-        else if(keyboard_state[input_component.key_down])
+        else if (keyboard_state[input_component.key_down])
         {
             velocity_component.direction = CVector2(0.0f, 1.0f);
             velocity_component.speed = input_component.paddle_speed;

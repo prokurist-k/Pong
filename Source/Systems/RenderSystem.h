@@ -7,6 +7,11 @@ class CRenderSystem
 public:
     CRenderSystem(class SDL_Renderer* in_renderer);
 
+    class SDL_Renderer* GetRenderer()
+    {
+        return renderer;
+    }
+
     void Update(CWorld& world);
 
 private:

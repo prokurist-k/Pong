@@ -25,14 +25,12 @@ enum EComponentType
 class CTransformComponent
 {
 public:
-
     CTransformComponent() = default;
     CTransformComponent(const CVector2& in_location, const float in_angle = 0.0f, const CVector2& in_scale = CVector2(1.0f))
-     : location(in_location)
-     , angle(in_angle)
-     , scale(in_scale)
+        : location(in_location)
+        , angle(in_angle)
+        , scale(in_scale)
     {
-
     }
 
     CVector2 location;
@@ -48,7 +46,6 @@ public:
         : direction(in_direction)
         , speed(in_speed)
     {
-
     }
 
     CVector2 direction = CVector2::zero_vector;
@@ -61,7 +58,8 @@ public:
     CSpriteComponent() = default;
     CSpriteComponent(const CColor& in_color)
         : color(in_color)
-    {}
+    {
+    }
 
     CColor color;
 };
@@ -75,7 +73,6 @@ public:
         , key_down(in_key_down)
         , paddle_speed(in_paddle_speed)
     {
-
     }
 
     SDL_Scancode key_up;
@@ -91,7 +88,6 @@ public:
         : size(in_size)
         , offset(in_offset)
     {
-
     }
 
     CVector2 size;
@@ -115,7 +111,6 @@ public:
     CTagComponent(ETag in_tag)
         : tag(in_tag)
     {
-
     }
 
     ETag tag;

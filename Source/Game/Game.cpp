@@ -1,6 +1,9 @@
 #include "Game.h"
 #include "Components/Components.h"
 #include "ECS/Entity.h"
+#include "GameStates/GameState.h"
+#include "GameStates/GameStateGame.h"
+#include "GameStates/GameStateMainMenu.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
 
@@ -13,15 +16,25 @@
 #include <SDL_events.h>
 #include <SDL_render.h>
 
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_sdlrenderer2.h"
+
 bool CGame::Initialize()
 {
-    if(!InitializeSDL())
+    if (!InitializeSDL())
     {
         SDL_Log("Failed to initialize SDL");
         return false;
     }
 
-    if(!InitializeECS())
+    if (!InitializeImgui())
+    {
+        SDL_Log("Failed to initialize imgui");
+        return false;
+    }
+
+    if (!InitializeECS())
     {
         SDL_Log("Failed to initialize ESC");
         return false;
@@ -29,17 +42,24 @@ bool CGame::Initialize()
 
     CreateEntities();
 
+    // ChangeGameState(new CGameStateGame());
+    ChangeGameState(new CGameStateMainMenu());
+
     return is_running = true;
 }
 
 void CGame::Shutdown()
 {
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     SDL_Quit();
 }
 
 void CGame::Run()
 {
-    while(is_running)
+    while (is_running)
     {
         ProcessInput();
 
@@ -57,22 +77,45 @@ void CGame::Run()
     }
 }
 
+void CGame::ChangeGameState(IGameState* new_state)
+{
+    if (current_state)
+    {
+        current_state->OnExit();
+    }
+
+    current_state.reset(new_state);
+    current_state->OnEnter(this);
+}
+
+void CGame::StartGame()
+{
+    ChangeGameState(new CGameStateGame);
+}
+
+void CGame::ExitGame()
+{
+    is_running = false;
+}
+
+void CGame::PauseGame()
+{
+}
+
 bool CGame::InitializeSDL()
 {
-    if(SDL_Init(SDL_INIT_VIDEO) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return false;
     }
 
-    window = SDL_CreateWindow
-        (
-            "Pong",
-            SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED,
-            game_config.window_width, game_config.window_height,
-            SDL_WINDOW_SHOWN
-        );
+    window = SDL_CreateWindow(
+        game_config.window_title.c_str(),
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        game_config.window_width, game_config.window_height,
+        SDL_WINDOW_SHOWN);
 
     if (window == nullptr)
     {
@@ -91,10 +134,25 @@ bool CGame::InitializeSDL()
     return true;
 }
 
+bool CGame::InitializeImgui()
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    io.FontGlobalScale = 2.0f;
+
+    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
+
+    ImGui::StyleColorsDark();
+    return true;
+}
+
 bool CGame::InitializeECS()
 {
     world = std::make_unique<CWorld>();
-    if(!world)
+    if (!world)
     {
         SDL_Log("Failed to create world");
         return false;
@@ -102,27 +160,33 @@ bool CGame::InitializeECS()
     world->SetWindowSize(game_config.window_width, game_config.window_height);
 
     render_system = std::make_unique<CRenderSystem>(renderer);
-    if(!render_system)
+    if (!render_system)
     {
         SDL_Log("Failed to create render system");
         return false;
     }
     movement_system = std::make_unique<CMovementSystem>();
-    if(!movement_system)
+    if (!movement_system)
     {
         SDL_Log("Failed to create movement system");
         return false;
     }
     input_system = std::make_unique<CInputSystem>();
-    if(!input_system)
+    if (!input_system)
     {
         SDL_Log("Failed to create input system");
         return false;
     }
     collision_system = std::make_unique<CCollisionSystem>();
-    if(!collision_system)
+    if (!collision_system)
     {
         SDL_Log("Failed to create collision system");
+        return false;
+    }
+    game_rules_system = std::make_unique<CGameRulesSystem>();
+    if (!game_rules_system)
+    {
+        SDL_Log("Failed to create game rules system");
         return false;
     }
     return true;
@@ -175,9 +239,10 @@ EntityId CGame::CreatePaddle(const CVector2& position, SDL_Scancode up, SDL_Scan
 void CGame::ProcessInput()
 {
     SDL_Event event;
-    while(SDL_PollEvent(&event))
+    while (SDL_PollEvent(&event))
     {
-        if(event.type == SDL_QUIT)
+        ImGui_ImplSDL2_ProcessEvent(&event);
+        if (event.type == SDL_QUIT)
         {
             is_running = false;
         }
@@ -186,9 +251,12 @@ void CGame::ProcessInput()
 
 void CGame::Update(float delta_seconds)
 {
-    input_system->Update(*world);
-    movement_system->Update(*world, delta_seconds);
-    collision_system->Update(*world);
+    world->UpdateTimer(delta_seconds);
+
+    if (current_state)
+    {
+        current_state->Update(this, delta_seconds);
+    }
 }
 
 void CGame::Render()
@@ -196,7 +264,10 @@ void CGame::Render()
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    render_system->Update(*world);
+    if (current_state)
+    {
+        current_state->Render(this);
+    }
 
     SDL_RenderPresent(renderer);
 }

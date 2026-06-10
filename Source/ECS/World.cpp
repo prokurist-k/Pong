@@ -6,8 +6,11 @@ CWorld::CWorld()
     : currently_active_entites(0)
     , window_width(0)
     , window_height(0)
+    , score_player1(0)
+    , score_player2(0)
+    , serve_timer(0.0f)
 {
-    for(EntityId i = 0; i != MAX_ENTITIES; ++i)
+    for (EntityId i = 0; i != MAX_ENTITIES; ++i)
     {
         available_entity_ids.push(i);
     }
@@ -38,9 +41,37 @@ uint32 CWorld::GetWindowHeight() const
     return window_height;
 }
 
+void CWorld::AddScoreP1()
+{
+    score_player1++;
+}
+
+void CWorld::AddScoreP2()
+{
+    score_player1++;
+}
+
+void CWorld::StartServeTimer(float duration)
+{
+    serve_timer = duration;
+}
+
+bool CWorld::IsServing() const
+{
+    return serve_timer > 0.0f;
+}
+
+void CWorld::UpdateTimer(float dt)
+{
+    if (serve_timer > 0.0f)
+    {
+        serve_timer -= dt;
+    }
+}
+
 EntityId CWorld::CreateEntity()
 {
-    if(currently_active_entites >= MAX_ENTITIES)
+    if (currently_active_entites >= MAX_ENTITIES)
     {
         return INVALID_ENTITY_ID;
     }

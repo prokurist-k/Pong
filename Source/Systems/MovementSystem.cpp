@@ -4,15 +4,13 @@
 
 CMovementSystem::CMovementSystem()
 {
-
 }
 
 void CMovementSystem::Update(CWorld& world, const float delta_seconds)
 {
-    for(EntityId id = 0; id != MAX_ENTITIES; ++id)
+    for (EntityId id = 0; id != MAX_ENTITIES; ++id)
     {
-        if(!world.HasComponent(id, EComponentType::Transform) ||
-            !world.HasComponent(id, EComponentType::Velocity))
+        if (!world.HasComponent(id, EComponentType::Transform) || !world.HasComponent(id, EComponentType::Velocity))
         {
             continue;
         }

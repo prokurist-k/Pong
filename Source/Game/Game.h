@@ -3,7 +3,9 @@
 
 #include "ECS/Entity.h"
 #include "ECS/World.h"
+#include "GameStates/GameState.h"
 #include "Systems/CollisionSystem.h"
+#include "Systems/GameRulesSystem.h"
 #include "Systems/InputSystem.h"
 #include "Systems/MovementSystem.h"
 #include "Systems/RenderSystem.h"
@@ -35,8 +37,50 @@ public:
 
     void Run();
 
+    void ChangeGameState(IGameState* new_state);
+
+    CWorld& GetWorld()
+    {
+        return *world;
+    }
+
+    class SDL_Renderer* GetRenderer() const
+    {
+        return renderer;
+    }
+
+    CRenderSystem& GetRenderSystem()
+    {
+        return *render_system;
+    };
+
+    CMovementSystem& GetMovementSystem()
+    {
+        return *movement_system;
+    }
+
+    CInputSystem& GetInputSystem()
+    {
+        return *input_system;
+    }
+
+    CCollisionSystem& GetCollisionSystem()
+    {
+        return *collision_system;
+    }
+
+    CGameRulesSystem& GetGameRulesSystem()
+    {
+        return *game_rules_system;
+    }
+
+    void StartGame();
+    void ExitGame();
+    void PauseGame();
+
 private:
     bool InitializeSDL();
+    bool InitializeImgui();
     bool InitializeECS();
 
     void CreateEntities();
@@ -54,11 +98,14 @@ private:
     class SDL_Renderer* renderer = nullptr;
     bool is_running = false;
 
+    std::unique_ptr<IGameState> current_state;
+
     std::unique_ptr<CWorld> world;
     std::unique_ptr<CRenderSystem> render_system;
     std::unique_ptr<CMovementSystem> movement_system;
     std::unique_ptr<CInputSystem> input_system;
     std::unique_ptr<CCollisionSystem> collision_system;
+    std::unique_ptr<CGameRulesSystem> game_rules_system;
 
     uint64 last_tick_time = 0;
 

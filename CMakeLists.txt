@@ -3,12 +3,12 @@ project(Pong)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(SDL2 REQUIRED)
 
-include_directories(Source)
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui)
+
 set(GAME_SOURCES
     Source/main.cpp
     Source/Components/Components.h
@@ -18,6 +18,13 @@ set(GAME_SOURCES
     Source/ECS/World.cpp
     Source/Game/Game.h
     Source/Game/Game.cpp
+    Source/GameStates/GameState.h
+    Source/GameStates/GameStateGame.h
+    Source/GameStates/GameStateGame.cpp
+    Source/GameStates/GameStateMainMenu.h
+    Source/GameStates/GameStateMainMenu.cpp
+    Source/GameStates/GameStatePause.h
+    Source/GameStates/GameStatePause.cpp
     Source/Math/AABB.h
     Source/Math/Color.h
     Source/Math/Color.cpp
@@ -27,6 +34,8 @@ set(GAME_SOURCES
     Source/Math/Vector2.cpp
     Source/Systems/CollisionSystem.h
     Source/Systems/CollisionSystem.cpp
+    Source/Systems/GameRulesSystem.h
+    Source/Systems/GameRulesSystem.cpp
     Source/Systems/InputSystem.h
     Source/Systems/InputSystem.cpp
     Source/Systems/MovementSystem.h
@@ -34,10 +43,30 @@ set(GAME_SOURCES
     Source/Systems/RenderSystem.h
     Source/Systems/RenderSystem.cpp
 )
+
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdlrenderer2.cpp
+)
+
 add_executable(Pong
     ${GAME_SOURCES}
+    ${IMGUI_SOURCES}
 )
-target_link_libraries(Pong PRIVATE SDL2::SDL2)
+
+target_include_directories(Pong PRIVATE
+    Source
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
+)
+
+target_link_libraries(Pong PRIVATE
+    SDL2::SDL2
+)
 
 if(TARGET SDL2::SDL2main)
     target_link_libraries(Pong PRIVATE SDL2::SDL2main)
