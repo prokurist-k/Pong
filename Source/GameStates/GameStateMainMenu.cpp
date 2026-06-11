@@ -1,6 +1,8 @@
 #include "GameStateMainMenu.h"
 #include "Game/Game.h"
 
+#include <SDL_events.h>
+#include <SDL_keycode.h>
 #include <SDL_render.h>
 
 #include "imgui.h"
@@ -27,44 +29,80 @@ void CGameStateMainMenu::Render(CGame* game)
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    ImGuiWindowFlags window_flags = 0;
-    window_flags |= ImGuiWindowFlags_NoTitleBar;
-    window_flags |= ImGuiWindowFlags_NoResize;
-    window_flags |= ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoScrollbar;
-    window_flags |= ImGuiWindowFlags_NoCollapse;
-    window_flags |= ImGuiWindowFlags_NoBackground;
-    window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize;
 
-    ImGui::SetNextWindowPos(ImVec2(center_x, 300), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowPos(ImVec2(center_x, 200), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
     ImGui::Begin("main_menu", nullptr, window_flags);
 
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.2f, 0.2f, 0.5f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 0.5f));
-
-    ImGui::Text("P O N G");
-    ImGui::Dummy(ImVec2(0, 20));
-
-    if (ImGui::Button("START GAME"))
+    for (int i = 0; i < max_buttons; ++i)
     {
-        game->StartGame();
+        const bool is_selected = (selected_button_index == i);
+
+        if (is_selected)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        }
+        else
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.2f, 0.2f, 0.5f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+        }
+
+        ImGui::Button(labels[i], ImVec2(button_width, 60.0f));
+
+        ImGui::PopStyleColor(3);
+        if (i < max_buttons - 1)
+        {
+            ImGui::Dummy(ImVec2(0, 10));
+        }
     }
 
-    if (ImGui::Button("EXIT"))
-    {
-    }
-
-    ImGui::PopStyleColor(3);
     ImGui::End();
 
-    SDL_SetRenderDrawColor(game->GetRenderSystem().GetRenderer(), 20, 20, 20, 255);
+    SDL_SetRenderDrawColor(game->GetRenderSystem().GetRenderer(), 10, 10, 10, 255);
     SDL_RenderClear(game->GetRenderSystem().GetRenderer());
-
     ImGui::Render();
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), game->GetRenderSystem().GetRenderer());
-
     SDL_RenderPresent(game->GetRenderSystem().GetRenderer());
+}
+
+void CGameStateMainMenu::HandleInput(SDL_Event& event, CGame* game)
+{
+    if (event.type == SDL_KEYDOWN)
+    {
+        switch (event.key.keysym.sym)
+        {
+        case SDLK_UP:
+            selected_button_index--;
+            if (selected_button_index < 0)
+            {
+                selected_button_index = max_buttons - 1;
+            }
+            break;
+        case SDLK_DOWN:
+            selected_button_index++;
+            if (selected_button_index >= max_buttons)
+            {
+                selected_button_index = 0;
+            }
+            break;
+        case SDLK_RETURN:
+        case SDLK_SPACE:
+            switch (selected_button_index)
+            {
+            case 0:
+                game->StartGame();
+                break;
+            case 1:
+                game->ExitGame();
+                break;
+            }
+            break;
+        }
+    }
 }
 
 std::string CGameStateMainMenu::GetName() const

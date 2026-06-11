@@ -1,5 +1,6 @@
 #include "GameStateGame.h"
 #include "Game/Game.h"
+#include <SDL_keycode.h>
 
 void CGameStateGame::OnEnter(CGame* game)
 {
@@ -25,6 +26,10 @@ void CGameStateGame::Update(CGame* game, float delta_seconds)
 void CGameStateGame::Render(CGame* game)
 {
     game->GetRenderSystem().Update(game->GetWorld());
+}
+
+void CGameStateGame::HandleInput(SDL_Event& event, CGame* game)
+{
 }
 
 std::string CGameStateGame::GetName() const

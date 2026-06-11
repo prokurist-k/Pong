@@ -246,6 +246,11 @@ void CGame::ProcessInput()
         {
             is_running = false;
         }
+
+        if (current_state)
+        {
+            current_state->HandleInput(event, this);
+        }
     }
 }
 

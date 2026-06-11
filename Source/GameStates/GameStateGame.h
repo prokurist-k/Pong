@@ -12,6 +12,8 @@ public:
     virtual void Update(class CGame* game, float delta_seconds) override;
     virtual void Render(class CGame* game) override;
 
+    virtual void HandleInput(SDL_Event& event, CGame* game) override;
+
     virtual std::string GetName() const override;
 };
 
