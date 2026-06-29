@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "Debug/DebugInspector.h"
 #include "ECS/Entity.h"
 #include "ECS/World.h"
 #include "GameStates/GameState.h"
@@ -77,6 +78,12 @@ public:
     void StartGame();
     void ExitGame();
     void PauseGame();
+    void UnPauseGame();
+
+    bool IsPaused() const
+    {
+        return is_paused;
+    }
 
 private:
     bool InitializeSDL();
@@ -94,9 +101,13 @@ private:
 private:
     SGameConfig game_config;
 
+    CDebugInspector inspector;
+    SFrameMetrics metrics = { };
+
     class SDL_Window* window = nullptr;
     class SDL_Renderer* renderer = nullptr;
     bool is_running = false;
+    bool is_paused = false;
 
     std::unique_ptr<IGameState> current_state;
 

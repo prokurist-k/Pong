@@ -48,7 +48,7 @@ void CWorld::AddScoreP1()
 
 void CWorld::AddScoreP2()
 {
-    score_player1++;
+    score_player2++;
 }
 
 void CWorld::StartServeTimer(float duration)

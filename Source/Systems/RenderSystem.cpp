@@ -7,15 +7,14 @@
 CRenderSystem::CRenderSystem(SDL_Renderer* in_renderer)
     : renderer(in_renderer)
 {
-
 }
 
 void CRenderSystem::Update(CWorld& world)
 {
-    for(EntityId id = 0; id != MAX_ENTITIES; ++id)
+    draw_calls = 0;
+    for (EntityId id = 0; id != MAX_ENTITIES; ++id)
     {
-        if(!world.HasComponent(id, EComponentType::Transform) ||
-            !world.HasComponent(id, EComponentType::Sprite))
+        if (!world.HasComponent(id, EComponentType::Transform) || !world.HasComponent(id, EComponentType::Sprite))
         {
             continue;
         }
@@ -31,5 +30,6 @@ void CRenderSystem::Update(CWorld& world)
 
         SDL_SetRenderDrawColor(renderer, sprite_component.color.r, sprite_component.color.g, sprite_component.color.b, sprite_component.color.a);
         SDL_RenderFillRect(renderer, &rect);
+        draw_calls++;
     }
 }

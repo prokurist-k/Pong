@@ -20,6 +20,14 @@ public:
 
     void AddScoreP1();
     void AddScoreP2();
+    uint32 GetScoreP1() const
+    {
+        return score_player1;
+    }
+    uint32 GetScoreP2() const
+    {
+        return score_player2;
+    }
 
     void StartServeTimer(float duration);
     bool IsServing() const;

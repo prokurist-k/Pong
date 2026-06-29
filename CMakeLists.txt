@@ -8,10 +8,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(SDL2 REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/imgui)
+set(MINIAUDIO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/miniaudio)
 
 set(GAME_SOURCES
     Source/main.cpp
+    Source/Audio/AudioImplementation.cpp
+    Source/Audio/AudioManager.h
+    Source/Audio/AudioManager.cpp
     Source/Components/Components.h
+    Source/Debug/DebugInspector.h
+    Source/Debug/DebugInspector.cpp
     Source/ECS/Entity.h
     Source/ECS/Entity.cpp
     Source/ECS/World.h
@@ -32,6 +38,8 @@ set(GAME_SOURCES
     Source/Math/Math.cpp
     Source/Math/Vector2.h
     Source/Math/Vector2.cpp
+    Source/Misc/Paths.h
+    Source/Misc/Paths.cpp
     Source/Systems/CollisionSystem.h
     Source/Systems/CollisionSystem.cpp
     Source/Systems/GameRulesSystem.h
@@ -62,6 +70,7 @@ target_include_directories(Pong PRIVATE
     Source
     ${IMGUI_DIR}
     ${IMGUI_DIR}/backends
+    ${MINIAUDIO_DIR}
 )
 
 target_link_libraries(Pong PRIVATE

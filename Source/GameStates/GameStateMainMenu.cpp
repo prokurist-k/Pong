@@ -1,20 +1,23 @@
 #include "GameStateMainMenu.h"
+#include "Audio/AudioManager.h"
 #include "Game/Game.h"
 
 #include <SDL_events.h>
 #include <SDL_keycode.h>
 #include <SDL_render.h>
 
+#include "Misc/Paths.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
-#include "imgui_impl_sdlrenderer2.h"
 
 void CGameStateMainMenu::OnEnter(CGame* game)
 {
+    CAudioManager::Get().PlayMusic(CPaths::Combine(CPaths::SoundDir(), "menu_music.mp3"));
 }
 
 void CGameStateMainMenu::OnExit()
 {
+    CAudioManager::Get().StopMusic();
 }
 
 void CGameStateMainMenu::Update(CGame* game, float delta_seconds)
@@ -25,14 +28,10 @@ void CGameStateMainMenu::Render(CGame* game)
 {
     uint32 center_x = game->GetWorld().GetWindowWidth() / 2;
 
-    ImGui_ImplSDLRenderer2_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
-    ImGui::NewFrame();
-
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize;
 
     ImGui::SetNextWindowPos(ImVec2(center_x, 200), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-    ImGui::Begin("main_menu", nullptr, window_flags);
+    ImGui::Begin("pause_menu", nullptr, window_flags);
 
     for (int i = 0; i < max_buttons; ++i)
     {
@@ -61,12 +60,6 @@ void CGameStateMainMenu::Render(CGame* game)
     }
 
     ImGui::End();
-
-    SDL_SetRenderDrawColor(game->GetRenderSystem().GetRenderer(), 10, 10, 10, 255);
-    SDL_RenderClear(game->GetRenderSystem().GetRenderer());
-    ImGui::Render();
-    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), game->GetRenderSystem().GetRenderer());
-    SDL_RenderPresent(game->GetRenderSystem().GetRenderer());
 }
 
 void CGameStateMainMenu::HandleInput(SDL_Event& event, CGame* game)

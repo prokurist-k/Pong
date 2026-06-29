@@ -1,11 +1,14 @@
 #include "Game.h"
+#include "Audio/AudioManager.h"
 #include "Components/Components.h"
+#include "CoreTypes.h"
 #include "ECS/Entity.h"
 #include "GameStates/GameState.h"
 #include "GameStates/GameStateGame.h"
 #include "GameStates/GameStateMainMenu.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
+#include "Misc/Paths.h"
 
 #include <SDL_log.h>
 #include <SDL_scancode.h>
@@ -40,9 +43,15 @@ bool CGame::Initialize()
         return false;
     }
 
-    CreateEntities();
+    if (!CAudioManager::Get().Initialize())
+    {
+        SDL_Log("Failed to initialize audio");
+        return false;
+    }
 
-    // ChangeGameState(new CGameStateGame());
+    CAudioManager::Get().LoadSound("ball_hit", CPaths::Combine(CPaths::SoundDir(), "hit_1.wav"));
+
+    CreateEntities();
     ChangeGameState(new CGameStateMainMenu());
 
     return is_running = true;
@@ -50,6 +59,7 @@ bool CGame::Initialize()
 
 void CGame::Shutdown()
 {
+    CAudioManager::Get().Shutdown();
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
@@ -61,6 +71,7 @@ void CGame::Run()
 {
     while (is_running)
     {
+        uint64 start_time = SDL_GetPerformanceCounter();
         ProcessInput();
 
         uint64 current_tick_time = SDL_GetTicks64();
@@ -74,6 +85,12 @@ void CGame::Run()
 
         Update(delta_seconds);
         Render();
+
+        uint64 end_time = SDL_GetPerformanceCounter();
+        float elapsed_time = (float)(end_time - start_time) * 1000.0f / (float)SDL_GetPerformanceFrequency();
+
+        metrics.frame_time = elapsed_time;
+        metrics.draw_calls = render_system->GetDrawCalls();
     }
 }
 
@@ -100,6 +117,12 @@ void CGame::ExitGame()
 
 void CGame::PauseGame()
 {
+    is_paused = true;
+}
+
+void CGame::UnPauseGame()
+{
+    is_paused = false;
 }
 
 bool CGame::InitializeSDL()
@@ -251,6 +274,16 @@ void CGame::ProcessInput()
         {
             current_state->HandleInput(event, this);
         }
+
+        if (event.type == SDL_KEYDOWN)
+        {
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_F1:
+                inspector.ToggleVisibility();
+                break;
+            }
+        }
     }
 }
 
@@ -269,10 +302,22 @@ void CGame::Render()
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
+    ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
     if (current_state)
     {
         current_state->Render(this);
     }
+
+    if (inspector.IsVisible())
+    {
+        inspector.Render(metrics, this);
+    }
+
+    ImGui::Render();
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
 
     SDL_RenderPresent(renderer);
 }

@@ -1,4 +1,5 @@
 #include "CollisionSystem.h"
+#include "Audio/AudioManager.h"
 #include "Components/Components.h"
 #include "ECS/Entity.h"
 #include "Math/AABB.h"
@@ -69,6 +70,7 @@ void CCollisionSystem::Update(CWorld& world)
                     CVector2 result = other_velocity_component.direction + ball_velocity_component.direction;
                     result.Normalize();
                     ball_velocity_component.direction = result;
+                    CAudioManager::Get().PlaySound("ball_hit");
                 }
                 else if (other_tag_component.tag == ETag::Enemy)
                 {
@@ -77,6 +79,7 @@ void CCollisionSystem::Update(CWorld& world)
                     CVector2 result = other_velocity_component.direction + ball_velocity_component.direction;
                     result.Normalize();
                     ball_velocity_component.direction = result;
+                    CAudioManager::Get().PlaySound("ball_hit");
                 }
             }
         }
