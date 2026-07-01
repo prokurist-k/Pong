@@ -23,6 +23,7 @@ CWorld::CWorld()
     input_component_pool.resize(MAX_ENTITIES);
     tag_component_pool.resize(MAX_ENTITIES);
     box_collider_component_pool.resize(MAX_ENTITIES);
+    particle_component_pool.resize(MAX_ENTITIES);
 }
 
 void CWorld::SetWindowSize(const uint32 in_width, const uint32 in_height)

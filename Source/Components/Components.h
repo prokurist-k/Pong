@@ -19,6 +19,7 @@ enum EComponentType
     Input,
     BoxCollider,
     Tag,
+    Particle,
     MaxComponents
 };
 
@@ -114,6 +115,14 @@ public:
     }
 
     ETag tag;
+};
+
+class CParticleComponent
+{
+public:
+    float initial_lifetime = 5.0f;
+    float lifetime = 5.0f;
+    CColor start_color = CColor::white;
 };
 
 #endif // COMPONENTS_H

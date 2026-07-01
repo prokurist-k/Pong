@@ -48,6 +48,8 @@ set(GAME_SOURCES
     Source/Systems/InputSystem.cpp
     Source/Systems/MovementSystem.h
     Source/Systems/MovementSystem.cpp
+    Source/Systems/ParticleSystem.h
+    Source/Systems/ParticleSystem.cpp
     Source/Systems/RenderSystem.h
     Source/Systems/RenderSystem.cpp
 )

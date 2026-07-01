@@ -9,6 +9,7 @@
 #include "Systems/GameRulesSystem.h"
 #include "Systems/InputSystem.h"
 #include "Systems/MovementSystem.h"
+#include "Systems/ParticleSystem.h"
 #include "Systems/RenderSystem.h"
 
 #include <memory>
@@ -75,6 +76,11 @@ public:
         return *game_rules_system;
     }
 
+    CParticleSystem& GetParticleSystem()
+    {
+        return *particle_system;
+    }
+
     void StartGame();
     void ExitGame();
     void PauseGame();
@@ -117,6 +123,7 @@ private:
     std::unique_ptr<CInputSystem> input_system;
     std::unique_ptr<CCollisionSystem> collision_system;
     std::unique_ptr<CGameRulesSystem> game_rules_system;
+    std::unique_ptr<CParticleSystem> particle_system;
 
     uint64 last_tick_time = 0;
 

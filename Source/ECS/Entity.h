@@ -6,6 +6,6 @@
 using EntityId = uint32;
 #define INVALID_ENTITY_ID ((EntityId)(0xFFFFFFFF))
 
-const uint32 MAX_ENTITIES = 1000;
+const uint32 MAX_ENTITIES = 20000;
 
 #endif // ENTITY_H

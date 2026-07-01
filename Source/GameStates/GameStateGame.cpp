@@ -27,6 +27,7 @@ void CGameStateGame::Update(CGame* game, float delta_seconds)
         game->GetMovementSystem().Update(game->GetWorld(), delta_seconds);
         game->GetCollisionSystem().Update(game->GetWorld());
         game->GetGameRulesSystem().Update(game->GetWorld());
+        game->GetParticleSystem().Update(game->GetWorld(), delta_seconds);
     }
 }
 
@@ -41,6 +42,7 @@ void CGameStateGame::Render(CGame* game)
 
     ImGui::Begin("score_hud", nullptr, score_hud_window_flags);
     ImGui::Text("%d  :  %d", game->GetWorld().GetScoreP1(), game->GetWorld().GetScoreP2());
+
     ImGui::End();
 
     if (game->IsPaused())

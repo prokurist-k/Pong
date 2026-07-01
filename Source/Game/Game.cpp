@@ -19,6 +19,7 @@
 #include <SDL_events.h>
 #include <SDL_render.h>
 
+#include "Systems/ParticleSystem.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
@@ -154,6 +155,7 @@ bool CGame::InitializeSDL()
         SDL_Quit();
         return false;
     }
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     return true;
 }
 
@@ -212,6 +214,13 @@ bool CGame::InitializeECS()
         SDL_Log("Failed to create game rules system");
         return false;
     }
+    particle_system = std::make_unique<CParticleSystem>();
+    if (!particle_system)
+    {
+        SDL_Log("Failed to create particle system");
+        return false;
+    }
+    // inspector.SetVisiblity(true);
     return true;
 }
 

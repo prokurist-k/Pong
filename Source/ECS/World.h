@@ -73,6 +73,11 @@ public:
             box_collider_component_pool[id] = std::forward<T>(component);
             signatures[id].set(EComponentType::BoxCollider, true);
         }
+        else if constexpr (std::is_same_v<ComponentType, CParticleComponent>)
+        {
+            particle_component_pool[id] = std::forward<T>(component);
+            signatures[id].set(EComponentType::Particle, true);
+        }
     }
 
     template <typename T>
@@ -102,6 +107,10 @@ public:
         {
             return box_collider_component_pool[id];
         }
+        else if constexpr (std::is_same_v<T, CParticleComponent>)
+        {
+            return particle_component_pool[id];
+        }
     }
 
 private:
@@ -123,6 +132,7 @@ private:
     std::vector<CInputComponent> input_component_pool;
     std::vector<CTagComponent> tag_component_pool;
     std::vector<CBoxColliderComponent> box_collider_component_pool;
+    std::vector<CParticleComponent> particle_component_pool;
 };
 
 #endif // WORLD_H
