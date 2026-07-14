@@ -8,7 +8,7 @@
 
 void CCollisionSystem::Update(CWorld& world)
 {
-    for (EntityId id = 0; id != MAX_ENTITIES; ++id)
+    for (EntityId id : world.GetActiveEntitiesForCollision())
     {
         if (!world.HasComponent(id, EComponentType::Tag) || !world.HasComponent(id, EComponentType::Transform) || !world.HasComponent(id, EComponentType::BoxCollider) || !world.HasComponent(id, EComponentType::Velocity))
         {
@@ -41,7 +41,7 @@ void CCollisionSystem::Update(CWorld& world)
         //     ball_velocity_component.direction.x *= -1.0f;
         // }
 
-        for (EntityId other_id = 0; other_id != MAX_ENTITIES; other_id++)
+        for (EntityId other_id : world.GetActiveEntitiesForCollision())
         {
             if (id == other_id)
             {

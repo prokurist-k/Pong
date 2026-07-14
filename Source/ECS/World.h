@@ -2,8 +2,10 @@
 #define WORLD_H
 
 #include "Components/Components.h"
+#include "CoreTypes.h"
 #include "Entity.h"
 
+#include <SDL_log.h>
 #include <queue>
 #include <type_traits>
 #include <utility>
@@ -14,22 +16,57 @@ class CWorld
 public:
     CWorld();
 
-    void SetWindowSize(const uint32 in_width, const uint32 in_height);
-    uint32 GetWindowWidth() const;
-    uint32 GetWindowHeight() const;
+    FORCEINLINE void SetWindowSize(const uint32 in_width, const uint32 in_height)
+    {
+        window_width = in_width;
+        window_height = in_height;
+    }
 
-    void AddScoreP1();
-    void AddScoreP2();
-    uint32 GetScoreP1() const
+    FORCEINLINE uint32 GetWindowWidth() const
+    {
+        return window_width;
+    }
+
+    FORCEINLINE uint32 GetWindowHeight() const
+    {
+        return window_height;
+    }
+
+    FORCEINLINE void AddScoreP1()
+    {
+        score_player1++;
+    }
+
+    FORCEINLINE void AddScoreP2()
+    {
+        score_player2++;
+    }
+
+    FORCEINLINE uint32 GetScoreP1() const
     {
         return score_player1;
     }
-    uint32 GetScoreP2() const
+
+    FORCEINLINE uint32 GetScoreP2() const
     {
         return score_player2;
     }
 
-    void StartServeTimer(float duration);
+    FORCEINLINE const std::vector<EntityId>& GetActiveEntitesForRendering() const
+    {
+        return active_entities_for_rendering;
+    }
+
+    FORCEINLINE const std::vector<EntityId>& GetActiveEntitiesForCollision() const
+    {
+        return active_entities_for_collision;
+    }
+
+    FORCEINLINE void StartServeTimer(float duration)
+    {
+        serve_timer = duration;
+    }
+
     bool IsServing() const;
     void UpdateTimer(float dt);
 
@@ -57,6 +94,7 @@ public:
         {
             sprite_component_pool[id] = std::forward<T>(component);
             signatures[id].set(EComponentType::Sprite, true);
+            active_entities_for_rendering.emplace_back(id);
         }
         else if constexpr (std::is_same_v<ComponentType, CInputComponent>)
         {
@@ -72,6 +110,7 @@ public:
         {
             box_collider_component_pool[id] = std::forward<T>(component);
             signatures[id].set(EComponentType::BoxCollider, true);
+            active_entities_for_collision.emplace_back(id);
         }
         else if constexpr (std::is_same_v<ComponentType, CParticleComponent>)
         {
@@ -114,6 +153,9 @@ public:
     }
 
 private:
+    void RemoveFromList(std::vector<EntityId>& list, const EntityId id);
+
+private:
     uint32 window_width;
     uint32 window_height;
 
@@ -133,6 +175,9 @@ private:
     std::vector<CTagComponent> tag_component_pool;
     std::vector<CBoxColliderComponent> box_collider_component_pool;
     std::vector<CParticleComponent> particle_component_pool;
+
+    std::vector<EntityId> active_entities_for_rendering;
+    std::vector<EntityId> active_entities_for_collision;
 };
 
 #endif // WORLD_H

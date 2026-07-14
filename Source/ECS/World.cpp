@@ -1,6 +1,8 @@
 #include "World.h"
 #include "Components/Components.h"
 #include "ECS/Entity.h"
+#include <SDL_log.h>
+#include <cstddef>
 
 CWorld::CWorld()
     : currently_active_entites(0)
@@ -24,37 +26,6 @@ CWorld::CWorld()
     tag_component_pool.resize(MAX_ENTITIES);
     box_collider_component_pool.resize(MAX_ENTITIES);
     particle_component_pool.resize(MAX_ENTITIES);
-}
-
-void CWorld::SetWindowSize(const uint32 in_width, const uint32 in_height)
-{
-    window_width = in_width;
-    window_height = in_height;
-}
-
-uint32 CWorld::GetWindowWidth() const
-{
-    return window_width;
-}
-
-uint32 CWorld::GetWindowHeight() const
-{
-    return window_height;
-}
-
-void CWorld::AddScoreP1()
-{
-    score_player1++;
-}
-
-void CWorld::AddScoreP2()
-{
-    score_player2++;
-}
-
-void CWorld::StartServeTimer(float duration)
-{
-    serve_timer = duration;
 }
 
 bool CWorld::IsServing() const
@@ -91,9 +62,25 @@ void CWorld::DestroyEntity(const EntityId id)
     signatures[id].reset();
     available_entity_ids.push(id);
     currently_active_entites--;
+
+    RemoveFromList(active_entities_for_rendering, id);
+    RemoveFromList(active_entities_for_collision, id);
 }
 
 bool CWorld::HasComponent(EntityId id, EComponentType component_type)
 {
     return signatures[id].test(component_type);
+}
+
+void CWorld::RemoveFromList(std::vector<EntityId>& list, const EntityId id)
+{
+    for (size_t i = 0; i < list.size(); ++i)
+    {
+        if (list[i] == id)
+        {
+            list[i] = list.back();
+            list.pop_back();
+            return;
+        }
+    }
 }

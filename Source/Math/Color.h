@@ -210,6 +210,15 @@ public:
     static const CColor black;
     static const CColor white;
 
+    static CColor FromUint32(uint32 color_code)
+    {
+        uint8 r = (color_code >> 24) & 0xFF;
+        uint8 g = (color_code >> 16) & 0xFF;
+        uint8 b = (color_code >> 8) & 0xFF;
+        uint8 a = (color_code) & 0xFF;
+        return CColor(r, g, b, a);
+    }
+
     FORCEINLINE CLinearColor ToLinearColor() const
     {
         return CLinearColor(r * 255, g * 255, b * 255, a * 255);
@@ -330,6 +339,11 @@ public:
     FORCEINLINE const std::string ToString() const
     {
         return std::format("({}, {}, {}, {})", r, g, b, a);
+    }
+
+    FORCEINLINE uint32 ToUint32() const
+    {
+        return (uint32)r << 24 | (uint32)g << 16 | (uint32)b << 8 | (uint32)a;
     }
 };
 
