@@ -15,7 +15,7 @@ void CGameStateMainMenu::OnEnter(CGame* game)
     CAudioManager::Get().PlayMusic(CPaths::Combine(CPaths::SoundDir(), "menu_music.mp3"));
 }
 
-void CGameStateMainMenu::OnExit()
+void CGameStateMainMenu::OnExit(CGame* game)
 {
     CAudioManager::Get().StopMusic();
 }

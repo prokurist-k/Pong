@@ -1,6 +1,7 @@
 #include "World.h"
 #include "Components/Components.h"
 #include "ECS/Entity.h"
+#include "Math/Vector2.h"
 #include <SDL_log.h>
 #include <cstddef>
 
@@ -83,4 +84,38 @@ void CWorld::RemoveFromList(std::vector<EntityId>& list, const EntityId id)
             return;
         }
     }
+}
+
+void CWorld::UpdateCameraShake(float delta_seconds)
+{
+    if (camera_shake.duration > 0.0f)
+    {
+        camera_shake.duration -= delta_seconds;
+
+        camera_shake.offset.x = (float)((rand() % 200) - 100) / 100.0f * camera_shake.intensity;
+        camera_shake.offset.y = (float)((rand() % 200) - 100) / 100.0f * camera_shake.intensity;
+
+        camera_shake.intensity *= 0.9f;
+    }
+    else
+    {
+        camera_shake.offset = CVector2::zero_vector;
+    }
+}
+
+void CWorld::Clear()
+{
+    for (EntityId id = 0; id != MAX_ENTITIES; ++id)
+    {
+        if (signatures[id].any())
+        {
+            DestroyEntity(id);
+        }
+    }
+
+    active_entities_for_collision.clear();
+    active_entities_for_rendering.clear();
+
+    score_player1 = 0;
+    score_player2 = 0;
 }

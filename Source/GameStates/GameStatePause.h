@@ -7,7 +7,7 @@ class CGameStatePause : public IGameState
 {
 public:
     virtual void OnEnter(class CGame* game) override;
-    virtual void OnExit() override;
+    virtual void OnExit(class CGame* game) override;
 
     virtual void Update(class CGame* game, float delta_seconds) override;
     virtual void Render(class CGame* game) override;

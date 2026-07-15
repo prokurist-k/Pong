@@ -90,6 +90,8 @@ void CCollisionSystem::Update(CWorld& world)
                         world.AddComponent(particle_id, CSpriteComponent(CColor(255, 200, 50, 255)));
                         world.AddComponent(particle_id, CParticleComponent(0.4f + (rand() % 30 / 100.0f)));
                     }
+                    world.GetCameraShakeData().intensity = 10.0f;
+                    world.GetCameraShakeData().duration = 8.0f;
                 }
                 else if (other_tag_component.tag == ETag::Enemy)
                 {
@@ -117,6 +119,8 @@ void CCollisionSystem::Update(CWorld& world)
                         world.AddComponent(particle_id, CSpriteComponent(CColor(255, 200, 50, 255)));
                         world.AddComponent(particle_id, CParticleComponent(0.4f + (rand() % 30 / 100.0f)));
                     }
+                    world.GetCameraShakeData().intensity = 10.0f;
+                    world.GetCameraShakeData().duration = 8.0f;
                 }
             }
         }

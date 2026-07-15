@@ -35,7 +35,9 @@ bool CAudioManager::PlaySound(const std::string& name)
 bool CAudioManager::PlayMusic(const std::string& filepath)
 {
     if (is_music_playing)
-        return false;
+    {
+        is_music_playing = false;
+    }
 
     ma_result result = ma_sound_init_from_file(&engine, filepath.c_str(), MA_SOUND_FLAG_STREAM, NULL, NULL, &menu_music);
     if (result == MA_SUCCESS)
@@ -52,7 +54,13 @@ bool CAudioManager::StopMusic()
     if (!is_music_playing)
         return false;
 
-    return ma_sound_stop(&menu_music) == MA_SUCCESS;
+    if (ma_sound_stop(&menu_music) == MA_SUCCESS)
+    {
+        ma_sound_uninit(&menu_music);
+        is_music_playing = false;
+        return true;
+    }
+    return false;
 }
 
 void CAudioManager::SetVolume(const float volume)

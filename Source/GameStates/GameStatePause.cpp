@@ -6,7 +6,7 @@ void CGameStatePause::OnEnter(CGame* game)
     game->PauseGame();
 }
 
-void CGameStatePause::OnExit()
+void CGameStatePause::OnExit(CGame* game)
 {
 }
 

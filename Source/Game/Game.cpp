@@ -52,7 +52,6 @@ bool CGame::Initialize()
 
     CAudioManager::Get().LoadSound("ball_hit", CPaths::Combine(CPaths::SoundDir(), "hit_1.wav"));
 
-    CreateEntities();
     ChangeGameState(new CGameStateMainMenu());
 
     return is_running = true;
@@ -99,7 +98,7 @@ void CGame::ChangeGameState(IGameState* new_state)
 {
     if (current_state)
     {
-        current_state->OnExit();
+        current_state->OnExit(this);
     }
 
     current_state.reset(new_state);
@@ -250,6 +249,11 @@ void CGame::CreateEntities()
     float enemy_location_x = game_config.window_width - game_config.paddle_offset_x - game_config.paddle_width;
     float enemy_location_y = (game_config.window_height / 2.0f) - (game_config.paddle_height / 2.0f);
     enemy_paddle = CreatePaddle(CVector2(enemy_location_x, enemy_location_y), SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, ETag::Enemy);
+}
+
+void CGame::ClearEntities()
+{
+    world->Clear();
 }
 
 EntityId CGame::CreatePaddle(const CVector2& position, SDL_Scancode up, SDL_Scancode down, ETag tag)

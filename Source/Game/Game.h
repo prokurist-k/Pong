@@ -91,12 +91,14 @@ public:
         return is_paused;
     }
 
+    void CreateEntities();
+    void ClearEntities();
+
 private:
     bool InitializeSDL();
     bool InitializeImgui();
     bool InitializeECS();
 
-    void CreateEntities();
     EntityId CreatePaddle(const CVector2& position, SDL_Scancode up, SDL_Scancode down, ETag tag);
 
     void ProcessInput();

@@ -30,9 +30,11 @@ void CRenderSystem::Update(CWorld& world)
         CTransformComponent transform_component = world.GetComponent<CTransformComponent>(id);
         CSpriteComponent sprite_component = world.GetComponent<CSpriteComponent>(id);
 
+        CWorld::SCameraShake camera_shake_data = world.GetCameraShakeData();
+
         SDL_Rect rect;
-        rect.x = static_cast<int32>(transform_component.location.x);
-        rect.y = static_cast<int32>(transform_component.location.y);
+        rect.x = static_cast<int32>(transform_component.location.x + camera_shake_data.offset.x);
+        rect.y = static_cast<int32>(transform_component.location.y + camera_shake_data.offset.y);
         rect.w = static_cast<int32>(transform_component.scale.x);
         rect.h = static_cast<int32>(transform_component.scale.y);
 

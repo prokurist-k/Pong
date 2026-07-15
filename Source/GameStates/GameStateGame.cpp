@@ -10,16 +10,25 @@
 
 void CGameStateGame::OnEnter(CGame* game)
 {
+    game->CreateEntities();
     max_buttons = sizeof(labels) / sizeof(labels[0]);
+
+    if (game->IsPaused())
+    {
+        game->UnPauseGame();
+    }
 }
 
-void CGameStateGame::OnExit()
+void CGameStateGame::OnExit(CGame* game)
 {
+    game->ClearEntities();
 }
 
 void CGameStateGame::Update(CGame* game, float delta_seconds)
 {
     game->GetWorld().UpdateTimer(delta_seconds);
+
+    game->GetWorld().UpdateCameraShake(delta_seconds);
 
     if (!game->GetWorld().IsServing() && !game->IsPaused())
     {

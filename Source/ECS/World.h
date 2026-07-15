@@ -4,6 +4,7 @@
 #include "Components/Components.h"
 #include "CoreTypes.h"
 #include "Entity.h"
+#include "Math/Vector2.h"
 
 #include <SDL_log.h>
 #include <queue>
@@ -14,6 +15,13 @@
 class CWorld
 {
 public:
+    struct SCameraShake
+    {
+        float duration = 0.0f;
+        float intensity = 0.0f;
+        CVector2 offset = { };
+    };
+
     CWorld();
 
     FORCEINLINE void SetWindowSize(const uint32 in_width, const uint32 in_height)
@@ -74,6 +82,14 @@ public:
     void DestroyEntity(const EntityId id);
 
     bool HasComponent(EntityId id, EComponentType component_type);
+
+    void UpdateCameraShake(float delta_seconds);
+    FORCEINLINE SCameraShake& GetCameraShakeData()
+    {
+        return camera_shake;
+    }
+
+    void Clear();
 
     template <typename T>
     void AddComponent(EntityId id, T&& component)
@@ -178,6 +194,8 @@ private:
 
     std::vector<EntityId> active_entities_for_rendering;
     std::vector<EntityId> active_entities_for_collision;
+
+    SCameraShake camera_shake;
 };
 
 #endif // WORLD_H
